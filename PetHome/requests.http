@@ -1,0 +1,21 @@
+### Добавление нового питомца — POST /pets (PetHome/Program.cs:43)
+@host = http://localhost:5217
+
+GET {{host}}/pets
+Content-Type: application/json
+###
+GET {{host}}/pets/20
+Content-Type: application/json
+###
+GET {{host}}/pets?name=Рыжик
+Content-Type: application/json
+###
+POST {{host}}/pets
+Content-Type: application/json
+
+{
+  "name": "Рыжик",
+  "type": "Cat",
+  "age": 3
+}
+###

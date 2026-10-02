@@ -1,0 +1,14 @@
+### Получение списка питомцев — GET /pets (PetHome/Program.cs:35)
+GET {{host}}/pets
+
+###
+@host = http://localhost:5217
+
+POST {{host}}/pets
+Content-Type: application/json
+
+{
+  "name": "Рыжик",
+  "type": "Cat",
+  "age": 3
+}
