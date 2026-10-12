@@ -14,7 +14,7 @@ POST {{host}}/pets
 Content-Type: application/json
 
 {
-  "name": "Рыжик",
+  "name": "Test1",
   "type": "Cat",
   "age": 3
 }
