@@ -1,46 +1,46 @@
 using PetHome.Dto;
+using PetHome.Entities;
+using PetHome.Enums;
 using PetHome.LocalStorage;
+using PetHome.Repositories;
 
 namespace PetHome.Services;
 
 internal class PetService: IPetService
 {
-    private readonly IEnumerable<INotificationSender> _notificationSenders;
-    private readonly ICounterService _counterService;
-
-    public PetService(
-        IEnumerable<INotificationSender> notificationSenders,
-        ICounterService counterService)
+    private IPetsRepository _petsRepository;
+    
+    public PetService(IPetsRepository petsRepository)
     {
-        _notificationSenders = notificationSenders;
-        _counterService = counterService;
+        _petsRepository = petsRepository;
     }
     
-    public IReadOnlyCollection<Pet> GetPets(string? name)
+    public IReadOnlyCollection<PetDto> GetPets()
     {
-        if(!string.IsNullOrEmpty(name))
-            return PetsDb.Pets.Where(pet => pet.Name == name).ToArray();
-    
-        return PetsDb.Pets;
+        return _petsRepository.GetPets()
+            .Select(PetDto.From)
+            .ToArray();
     }
     
-    public Pet GetPet(int id)
+    public PetDto GetPet(Guid id)
     {
-        if (id >= PetsDb.Pets.Count || id < 0)
-            throw new ArgumentOutOfRangeException("id not found");
-    
-        return PetsDb.Pets[id];
+       var pet = _petsRepository.GetPet(id);
+       return PetDto.From(pet);
     }
     
-    public void CreatePet(Pet pet)
+    public void CreatePet(AddPetRequest addPetRequest)
     {
-        _counterService.Counter++;
-        Console.WriteLine($"PetService: {_counterService.Counter}");
-        
-        PetsDb.Pets.Add(pet);
-        foreach (var notificationSender in _notificationSenders)
+        _petsRepository.AddPet(new PetEntity()
         {
-            notificationSender.Send("New Pet created");
-        }
+            Id = Guid.NewGuid(),
+            Name = addPetRequest.Name,
+            Description = addPetRequest.Description,
+            Gender = addPetRequest.Gender,
+            Age = addPetRequest.Age,
+            Kind = addPetRequest.Kind,
+            Breed = addPetRequest.Breed,
+            Status = PetStatus.Registered,
+            RegisteredDate = DateTimeOffset.UtcNow
+        });
     }
 }
