@@ -16,25 +16,25 @@ public class PetsController : ControllerBase
     
     //POST /pets
     [HttpPost]
-    public ActionResult AddPet([FromBody] AddPetRequest request)
+    public async Task<ActionResult> AddPet([FromBody] AddPetRequest request)
     {
-        _petService.CreatePet(request);
+        await _petService.CreatePet(request);
         
         return Ok();
     }
     
     [HttpGet("{id:guid}")]
-    public ActionResult Get([FromRoute] Guid id)
+    public async Task<ActionResult> Get([FromRoute] Guid id)
     {
-        var pet = _petService.GetPet(id);
+        var pet = await _petService.GetPet(id);
         
         return Ok(pet);
     }
     
     [HttpGet]
-    public ActionResult Get()
+    public async Task<ActionResult> Get()
     {
-        var pets = _petService.GetPets();
+        var pets = await _petService.GetPets();
         
         return Ok(pets);
     }

@@ -4,7 +4,7 @@ namespace PetHome.Services;
 
 public interface IPetService
 {
-    IReadOnlyCollection<PetDto> GetPets();
-    PetDto GetPet(Guid id);
-    void CreatePet(AddPetRequest addPetRequest);
+    Task<IReadOnlyCollection<PetDto>> GetPets();
+    Task<PetDto> GetPet(Guid id);
+    Task CreatePet(AddPetRequest addPetRequest);
 }

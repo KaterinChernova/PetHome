@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using PetHome.Dto;
 using PetHome.Entities;
 using PetHome.Enums;
@@ -15,22 +16,35 @@ internal class PetService: IPetService
         _petsRepository = petsRepository;
     }
     
-    public IReadOnlyCollection<PetDto> GetPets()
+    public async Task<IReadOnlyCollection<PetDto>> GetPets()
     {
-        return _petsRepository.GetPets()
-            .Select(PetDto.From)
-            .ToArray();
+        return await _petsRepository.GetPets()
+            .OrderBy(x => x.RegisteredDate)
+            .AsEnumerable()
+            .Select(pet => new PetDto()
+            {
+                Id = pet.Id,
+                Name = pet.Name,
+                Description = pet.Description,
+                Age = pet.Age,
+                Kind = pet.Kind,
+                Status = pet.Status,
+                Breed = pet.Breed,
+                Gender = pet.Gender
+            })
+            .ToAsyncEnumerable()
+            .ToArrayAsync();
     }
     
-    public PetDto GetPet(Guid id)
+    public async Task<PetDto> GetPet(Guid id)
     {
-       var pet = _petsRepository.GetPet(id);
+       var pet = await _petsRepository.GetPetAsync(id);
        return PetDto.From(pet);
     }
     
-    public void CreatePet(AddPetRequest addPetRequest)
+    public async Task CreatePet(AddPetRequest addPetRequest)
     {
-        _petsRepository.AddPet(new PetEntity()
+        await _petsRepository.AddPetAsync(new PetEntity()
         {
             Id = Guid.NewGuid(),
             Name = addPetRequest.Name,
@@ -40,7 +54,7 @@ internal class PetService: IPetService
             Kind = addPetRequest.Kind,
             Breed = addPetRequest.Breed,
             Status = PetStatus.Registered,
-            RegisteredDate = DateTimeOffset.UtcNow
+            RegisteredDate = DateTime.UtcNow
         });
     }
 }

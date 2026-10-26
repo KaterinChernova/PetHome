@@ -31,4 +31,19 @@ public class InMemoryPetsRepository : IPetsRepository
     {
         return _pets.Values;
     }
+
+    public Task AddPetAsync(PetEntity pet)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<PetEntity> GetPetAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IEnumerable<PetEntity>> GetPetsAsync()
+    {
+        throw new NotImplementedException();
+    }
 }

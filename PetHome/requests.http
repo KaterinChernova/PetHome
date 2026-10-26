@@ -7,10 +7,10 @@ Content-Type: application/json
 GET {{host}}/pets/1
 Content-Type: application/json
 ###
-GET {{host}}/pets/70378245-a1d3-4513-b325-5bc89a8cbee8
+GET {{host}}/pets/3317a9a9-c803-4102-ae7f-100c4a2d40a1
 Content-Type: application/json
 ###
-GET {{host}}/pets?name=Рыжик
+GET {{host}}/pets
 Content-Type: application/json
 ###
 POST {{host}}/pets
@@ -26,7 +26,10 @@ POST {{host}}/Pets
 Content-Type: application/json
 
 {
-  "name": "Test1",
-  "kind": 10,
-  "age": -9
+  "name": "Voland",
+  "kind": 2,
+  "age": 1,
+  "description": "Инертный",
+  "breed": "двортерьер",
+  "gender": 1
 }
