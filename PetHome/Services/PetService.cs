@@ -19,20 +19,8 @@ internal class PetService: IPetService
     public async Task<IReadOnlyCollection<PetDto>> GetPets()
     {
         return await _petsRepository.GetPets()
-            .OrderBy(x => x.RegisteredDate)
-            .AsEnumerable()
-            .Select(pet => new PetDto()
-            {
-                Id = pet.Id,
-                Name = pet.Name,
-                Description = pet.Description,
-                Age = pet.Age,
-                Kind = pet.Kind,
-                Status = pet.Status,
-                Breed = pet.Breed,
-                Gender = pet.Gender
-            })
             .ToAsyncEnumerable()
+            .Select(PetDto.From)
             .ToArrayAsync();
     }
     
@@ -50,7 +38,7 @@ internal class PetService: IPetService
             Name = addPetRequest.Name,
             Description = addPetRequest.Description,
             Gender = addPetRequest.Gender,
-            Age = addPetRequest.Age,
+            DateOfBirth = DateTime.UtcNow.AddYears(-addPetRequest.Age),
             Kind = addPetRequest.Kind,
             Breed = addPetRequest.Breed,
             Status = PetStatus.Registered,

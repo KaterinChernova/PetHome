@@ -22,52 +22,106 @@ namespace PetHome.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("PetHome.Entities.AdoptionApplicationEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("PetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PetId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Applications");
+                });
+
             modelBuilder.Entity("PetHome.Entities.PetEntity", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<int>("Age")
-                        .HasColumnType("integer")
-                        .HasColumnName("age");
 
                     b.Property<string>("Breed")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)")
-                        .HasColumnName("breed");
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("varchar(1000)")
-                        .HasColumnName("description");
+                        .HasColumnType("text");
 
                     b.Property<int>("Gender")
-                        .HasColumnType("integer")
-                        .HasColumnName("gender");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Kind")
-                        .HasColumnType("integer")
-                        .HasColumnName("kind");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
-                        .HasColumnName("name");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("RegisteredDate")
-                        .HasColumnType("date")
-                        .HasColumnName("registered_date");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Status")
-                        .HasColumnType("integer")
-                        .HasColumnName("status");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.ToTable("pets");
+                });
+
+            modelBuilder.Entity("PetHome.Entities.UserEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("users");
+                });
+
+            modelBuilder.Entity("PetHome.Entities.AdoptionApplicationEntity", b =>
+                {
+                    b.HasOne("PetHome.Entities.PetEntity", "Pet")
+                        .WithMany()
+                        .HasForeignKey("PetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PetHome.Entities.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Pet");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

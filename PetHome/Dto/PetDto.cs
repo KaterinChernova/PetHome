@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.JavaScript;
 using PetHome.Entities;
 using PetHome.Enums;
 
@@ -27,7 +28,8 @@ public class PetDto
             Id = pet.Id,
             Name = pet.Name,
             Description = pet.Description,
-            Age = pet.Age,
+            Age = 
+                TimeSpan.FromTicks(DateTime.UtcNow.Ticks - pet.DateOfBirth.Ticks).Days / 30 / 12,
             Kind = pet.Kind,
             Status = pet.Status,
             Breed = pet.Breed,

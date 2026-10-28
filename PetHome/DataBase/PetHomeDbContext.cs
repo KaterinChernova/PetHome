@@ -12,6 +12,8 @@ public class PetHomeDbContext : DbContext
     }
     
     public DbSet<PetEntity> Pets { get; set; }
+    public DbSet<AdoptionApplicationEntity> Applications { get; set; }
+    public DbSet<UserEntity> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
