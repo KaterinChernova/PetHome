@@ -29,7 +29,7 @@ public class PetDto
             Name = pet.Name,
             Description = pet.Description,
             Age = 
-                TimeSpan.FromTicks(DateTime.UtcNow.Ticks - pet.DateOfBirth.Ticks).Days / 30 / 12,
+                TimeSpan.FromTicks(DateTime.UtcNow.Ticks - pet.DateOfBirthUtc.Ticks).Days / 30 / 12,
             Kind = pet.Kind,
             Status = pet.Status,
             Breed = pet.Breed,

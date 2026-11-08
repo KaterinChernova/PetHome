@@ -28,8 +28,35 @@ namespace PetHome.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<Guid>("ApplicantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("ClosedAtUtc")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ContactEmail")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ContactName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ContactPhone")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("DecidedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DecidedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DecisionComment")
+                        .HasColumnType("text");
 
                     b.Property<Guid>("PetId")
                         .HasColumnType("uuid");
@@ -37,17 +64,16 @@ namespace PetHome.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PetId");
+                    b.HasIndex("ApplicantId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("DecidedByUserId");
+
+                    b.HasIndex("PetId");
 
                     b.ToTable("Applications");
                 });
@@ -62,7 +88,7 @@ namespace PetHome.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("DateOfBirth")
+                    b.Property<DateTimeOffset>("DateOfBirthUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
@@ -79,7 +105,7 @@ namespace PetHome.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("RegisteredDate")
+                    b.Property<DateTimeOffset>("RegisteredDateUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Status")
@@ -96,7 +122,14 @@ namespace PetHome.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -107,21 +140,32 @@ namespace PetHome.Migrations
 
             modelBuilder.Entity("PetHome.Entities.AdoptionApplicationEntity", b =>
                 {
-                    b.HasOne("PetHome.Entities.PetEntity", "Pet")
+                    b.HasOne("PetHome.Entities.UserEntity", "Applicant")
                         .WithMany()
+                        .HasForeignKey("ApplicantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PetHome.Entities.UserEntity", "DecidedByUser")
+                        .WithMany()
+                        .HasForeignKey("DecidedByUserId");
+
+                    b.HasOne("PetHome.Entities.PetEntity", "Pet")
+                        .WithMany("AdoptionApplications")
                         .HasForeignKey("PetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PetHome.Entities.UserEntity", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Applicant");
+
+                    b.Navigation("DecidedByUser");
 
                     b.Navigation("Pet");
+                });
 
-                    b.Navigation("User");
+            modelBuilder.Entity("PetHome.Entities.PetEntity", b =>
+                {
+                    b.Navigation("AdoptionApplications");
                 });
 #pragma warning restore 612, 618
         }

@@ -13,15 +13,16 @@ public class AdoptionApplicationPropertiesConfiguration: IEntityTypeConfiguratio
         builder.HasKey(p => p.Id);
 
         builder.Property(p => p.Id)
-            .HasColumnName("id")
             .ValueGeneratedNever();
 
-        builder.Property(p => p.CreatedAt)
+        builder.Property(p => p.CreatedAtUtc)
             .HasColumnName("created_at")
+            .HasColumnType("timestamp with time zone")
             .IsRequired();
         
-        builder.Property(p => p.UpdatedAt)
+        builder.Property(p => p.UpdatedAtUtc)
             .HasColumnName("created_at")
+            .HasColumnType("timestamp with time zone")
             .IsRequired();
         
         builder.Property(p => p.Status)
@@ -34,7 +35,7 @@ public class AdoptionApplicationPropertiesConfiguration: IEntityTypeConfiguratio
             .HasColumnName("pet_id");
         
         builder
-            .Property(x => x.UserId)
+            .Property(x => x.ApplicantId)
             .HasColumnName("user_id");
         
         builder
@@ -44,9 +45,9 @@ public class AdoptionApplicationPropertiesConfiguration: IEntityTypeConfiguratio
             .IsRequired();
         
         builder
-            .HasOne(p => p.User)
+            .HasOne(p => p.Applicant)
             .WithMany()
-            .HasForeignKey(p => p.UserId)
+            .HasForeignKey(p => p.ApplicantId)
             .IsRequired();
     }
 }

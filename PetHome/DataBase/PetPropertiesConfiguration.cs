@@ -37,9 +37,9 @@ public class PetPropertiesConfiguration: IEntityTypeConfiguration<PetEntity>
             .HasConversion<int>()
             .IsRequired();
 
-        builder.Property(p => p.DateOfBirth)
+        builder.Property(p => p.DateOfBirthUtc)
             .HasColumnName("date_of_birth")
-            .HasConversion<DateTime>()
+            .HasColumnType("timestamp with time zone")
             .IsRequired();
         
         builder.Property(p => p.Description)
@@ -52,7 +52,7 @@ public class PetPropertiesConfiguration: IEntityTypeConfiguration<PetEntity>
             .HasConversion<int>()
             .IsRequired();
 
-        builder.Property(p => p.RegisteredDate)
+        builder.Property(p => p.RegisteredDateUtc)
             .HasColumnName("registered_at_utc")
             .HasColumnType("timestamp with time zone")
             .IsRequired();

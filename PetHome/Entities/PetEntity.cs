@@ -13,7 +13,7 @@ public class PetEntity
     
     public string Description { get; set; }
     
-    public DateTime DateOfBirth { get; set; }
+    public DateTimeOffset DateOfBirthUtc { get; set; }
     
     public PetKind Kind { get; set; }
     
@@ -23,8 +23,8 @@ public class PetEntity
     
     public PetStatus Status { get; set; }
     
-    public DateTime RegisteredDate { get; set; }
+    public DateTimeOffset RegisteredDateUtc { get; set; }
     
-    public ICollection<AdoptionApplicationEntity> AdoptionApplications { get; set; } 
+    public virtual ICollection<AdoptionApplicationEntity> AdoptionApplications { get; set; } 
         = new List<AdoptionApplicationEntity>(); 
 }

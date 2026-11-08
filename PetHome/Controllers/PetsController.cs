@@ -14,7 +14,6 @@ public class PetsController : ControllerBase
       _petService = petService;
     }
     
-    //POST /pets
     [HttpPost]
     public async Task<ActionResult> AddPet([FromBody] AddPetRequest request)
     {

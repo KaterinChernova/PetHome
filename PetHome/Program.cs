@@ -9,16 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IPetService, PetService>();
 builder.Services.AddSingleton<IPetsRepository, InMemoryPetsRepository>();
 builder.Services.AddScoped<IPetsRepository, EfPetsRepository>();
+builder.Services.AddScoped<IAdoptionApplicationService, AdoptionApplicationService>();
 builder.Services.AddControllers();
-
-builder.Services.AddScoped<INotificationSender, SmsSender>();
-builder.Services.AddScoped<INotificationSender, EmailSender>();
-builder.Services.AddScoped<INotificationSender, TelegramSender>();
-builder.Services.AddTransient<ICounterService, CounterService>();
 
 builder.Services.AddDbContext<PetHomeDbContext>(opt =>
 {
-    opt.UseNpgsql("Host=localhost;Port=5432;Username=pethome_app;Password=1234567;Database=pethome");
+    opt.UseNpgsql("Host=localhost;Port=5432;Username=pethome_app;Password=1234567;Database=pethome")
+        .UseLazyLoadingProxies();
 });
 
 var app = builder.Build();

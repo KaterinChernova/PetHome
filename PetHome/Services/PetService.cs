@@ -9,7 +9,7 @@ namespace PetHome.Services;
 
 internal class PetService: IPetService
 {
-    private IPetsRepository _petsRepository;
+    private readonly IPetsRepository _petsRepository;
     
     public PetService(IPetsRepository petsRepository)
     {
@@ -18,10 +18,9 @@ internal class PetService: IPetService
     
     public async Task<IReadOnlyCollection<PetDto>> GetPets()
     {
-        return await _petsRepository.GetPets()
-            .ToAsyncEnumerable()
+        return (await _petsRepository.GetPetsAsync())
             .Select(PetDto.From)
-            .ToArrayAsync();
+            .ToArray();
     }
     
     public async Task<PetDto> GetPet(Guid id)
@@ -38,11 +37,11 @@ internal class PetService: IPetService
             Name = addPetRequest.Name,
             Description = addPetRequest.Description,
             Gender = addPetRequest.Gender,
-            DateOfBirth = DateTime.UtcNow.AddYears(-addPetRequest.Age),
+            DateOfBirthUtc = DateTimeOffset.UtcNow.AddYears(-addPetRequest.Age),
             Kind = addPetRequest.Kind,
             Breed = addPetRequest.Breed,
             Status = PetStatus.Registered,
-            RegisteredDate = DateTime.UtcNow
+            RegisteredDateUtc = DateTimeOffset.UtcNow
         });
     }
 }
