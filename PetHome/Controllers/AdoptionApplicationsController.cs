@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using PetHome.Dto;
 using PetHome.Exceptions;
+using PetHome.Filters;
 using PetHome.Services;
 
 namespace PetHome.Controllers;
 
 [ApiController]
 [Route("adoption-applications")]
+[ServiceFilter(typeof(AdoptionEnableFilter))]
 public sealed class AdoptionApplicationsController(IAdoptionApplicationService service) : ControllerBase
 {
     [HttpPost]
@@ -14,41 +16,12 @@ public sealed class AdoptionApplicationsController(IAdoptionApplicationService s
         AddAdoptionApplicationRequest request,
         CancellationToken cancellationToken)
     {
-        try
+        var applicationId = await service.Add(request, cancellationToken);
+
+        return new ObjectResult(applicationId)
         {
-            var applicationId = await service.Add(request, cancellationToken);
-
-            return new ObjectResult(applicationId)
-            {
-                StatusCode = StatusCodes.Status201Created
-            };
-        }
-        catch (AdoptionException exception)
-        {
-            var status = exception.Error switch
-            {
-                AdoptionError.InvalidId => StatusCodes.Status400BadRequest,
-                AdoptionError.PetNotFound or AdoptionError.ApplicantNotFound
-                    => StatusCodes.Status404NotFound,
-                AdoptionError.PetNotAvailable or AdoptionError.ActiveApplicationAlreadyExists
-                    => StatusCodes.Status409Conflict,
-                _ => StatusCodes.Status500InternalServerError
-            };
-
-            var details = new ProblemDetails
-            {
-                Status = status,
-                Title = "Не удалось создать заявку",
-                Detail = exception.Message
-            };
-            details.Extensions["code"] = exception.Error.ToString();
-
-            return new ObjectResult(details)
-            {
-                StatusCode = status,
-                ContentTypes = { "application/problem+json" }
-            };
-        }
+            StatusCode = StatusCodes.Status201Created
+        };
     }
 
     [HttpGet("created")]

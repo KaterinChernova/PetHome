@@ -39,7 +39,21 @@ POST {{host}}/adoption-applications
 Content-Type: application/json
 
 {
-  "petId": "b00b237e-38e3-48c5-a703-8a37a29c383e",
+  "petId": "4fb44014-360b-4511-a2ed-bbd53a21e300",
+  "applicantId": "e2b6ad86-65ad-4b27-bc54-1cebdbc185f7",
+  "contactName": "Петр Васильевич",
+  "contactEmail": null,
+  "contactPhone": "+79222222222",
+  "comment": "я хороший"
+}
+
+
+### Not found pet
+POST {{host}}/adoption-applications
+Content-Type: application/json
+
+{
+  "petId": "b00b238e-38e3-48c5-a703-8a37a29c383e",
   "applicantId": "e2b6ad86-65ad-4b27-bc54-1cebdbc185f7",
   "contactName": "Петр Васильевич",
   "contactEmail": null,

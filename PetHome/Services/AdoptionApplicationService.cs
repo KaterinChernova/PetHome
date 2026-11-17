@@ -15,12 +15,12 @@ public class AdoptionApplicationService(PetHomeDbContext dbContext)
         CancellationToken cancellationToken = default)
     {
         if (request.PetId == Guid.Empty)
-            throw new AdoptionException(
-                AdoptionError.InvalidId, $"Некорретный PetId = {request.PetId}");
+            throw new ValidationException(
+                AdoptionError.InvalidId.ToString(), $"Некорретный PetId = {request.PetId}");
         
         if (request.ApplicantId == Guid.Empty)
-            throw new AdoptionException(
-                AdoptionError.InvalidId, $"Некорретный ApplicantId = {request.ApplicantId}");
+            throw new ValidationException(
+                AdoptionError.InvalidId.ToString(), $"Некорретный ApplicantId = {request.ApplicantId}");
             
         await using var transaction 
             = await dbContext.Database.BeginTransactionAsync(cancellationToken);
@@ -33,17 +33,17 @@ public class AdoptionApplicationService(PetHomeDbContext dbContext)
         var pet = pets.FirstOrDefault();
 
         if (pet is null)
-            throw new AdoptionException(
-                AdoptionError.PetNotFound, $"Животное с ID={request.PetId} не найдено");
+            throw new ValidationException(
+                AdoptionError.PetNotFound.ToString(), $"Животное с ID={request.PetId} не найдено");
         
         if (pet.Status != PetStatus.Available)
-            throw new AdoptionException(
-                AdoptionError.PetNotAvailable, $"Животное с ID={request.PetId} не доступно для усыновления");
+            throw new ValidationException(
+                AdoptionError.PetNotAvailable.ToString(), $"Животное с ID={request.PetId} не доступно для усыновления");
 
         var user = await dbContext.Users.FindAsync(request.ApplicantId, cancellationToken);
         if (user is null)
-            throw new AdoptionException(
-                AdoptionError.ApplicantNotFound, $"Пользователь с ID={request.ApplicantId} не найдено");
+            throw new ValidationException(
+                AdoptionError.ApplicantNotFound.ToString(), $"Пользователь с ID={request.ApplicantId} не найдено");
 
         var alreadyExists = dbContext.Applications
             .Any(a =>
@@ -51,8 +51,8 @@ public class AdoptionApplicationService(PetHomeDbContext dbContext)
                 && a.ApplicantId == request.ApplicantId
                 && new[] { ApplicationStatus.Rejected, ApplicationStatus.Cancelled }.All(x => x != a.Status));
         if(alreadyExists)
-            throw new AdoptionException(
-                AdoptionError.ActiveApplicationAlreadyExists, $"Уже существует заявка этого пользователя на животное с ID={request.PetId} в активных статусах");
+            throw new ValidationException(
+                AdoptionError.ActiveApplicationAlreadyExists.ToString(), $"Уже существует заявка этого пользователя на животное с ID={request.PetId} в активных статусах");
 
         var application = new AdoptionApplicationEntity()
         {
