@@ -8,10 +8,10 @@ namespace PetHome.Controllers;
 
 [ApiController]
 [Route("adoption-applications")]
-[ServiceFilter(typeof(AdoptionEnableFilter))]
 public sealed class AdoptionApplicationsController(IAdoptionApplicationService service) : ControllerBase
 {
     [HttpPost]
+    [ServiceFilter(typeof(AdoptionEnableFilter))]
     public async Task<ActionResult<Guid>> Create(
         AddAdoptionApplicationRequest request,
         CancellationToken cancellationToken)

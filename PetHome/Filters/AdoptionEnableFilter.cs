@@ -1,15 +1,31 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Options;
+using PetHome.Options;
 
 namespace PetHome.Filters;
 
 public class AdoptionEnableFilter : IAsyncActionFilter
 {
+    private readonly IOptionsMonitor<AdoptionApplicationOptions> _adoptionOptions;
+    private readonly ILogger<AdoptionEnableFilter> _logger;
+
+    public AdoptionEnableFilter(IOptionsMonitor<AdoptionApplicationOptions> adoptionOptions, ILogger<AdoptionEnableFilter> logger)
+    {
+        _adoptionOptions = adoptionOptions;
+        _logger = logger;
+        _adoptionOptions.OnChange((options) =>
+        {
+            _logger.LogInformation("AdoptionApplicationOptions were changed");
+        });
+    }
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        Console.WriteLine("Enter AdoptionEnableFilter");
-        var rndValue = Random.Shared.Next(0, 2);
-        if (rndValue == 0)
+        _logger.LogInformation("Enter AdoptionEnableFilter");
+        
+        _logger.LogInformation($"isApplicationEnable = {_adoptionOptions.CurrentValue.IsApplicationEnable}; config env: {_adoptionOptions.CurrentValue.Env}");
+        if (!_adoptionOptions.CurrentValue.IsApplicationEnable)
         {
             var problem = new ProblemDetails
             {
@@ -24,12 +40,12 @@ public class AdoptionEnableFilter : IAsyncActionFilter
                 ContentTypes = { "application/problem+json" }
             };
             
-            Console.WriteLine("Exit AdoptionEnableFilter - adoption creation disable");
+            _logger.LogInformation("Exit AdoptionEnableFilter - adoption creation disable");
             return;
         }
         
         await next();
         
-        Console.WriteLine("Exit AdoptionEnableFilter - adoption creation enable");
+        _logger.LogInformation("Exit AdoptionEnableFilter - adoption creation enable");
     }
 }

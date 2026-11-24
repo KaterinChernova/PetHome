@@ -1,19 +1,28 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using PetHome.DataBase;
 using PetHome.Dto;
 using PetHome.Entities;
 using PetHome.Enums;
 using PetHome.Exceptions;
+using PetHome.Options;
 
 namespace PetHome.Services;
 
-public class AdoptionApplicationService(PetHomeDbContext dbContext)
+public class AdoptionApplicationService(
+    PetHomeDbContext dbContext,
+    ILogger<AdoptionApplicationService> logger,
+    IOptions<AdoptionApplicationOptions> adoptionOptions)
     : IAdoptionApplicationService
 {
+    private int saveAttempt;
+    
     public async Task<Guid> Add(
         AddAdoptionApplicationRequest request,
         CancellationToken cancellationToken = default)
     {
+        using (logger.BeginScope("PetId: {PetId}", request.PetId));
+        
         if (request.PetId == Guid.Empty)
             throw new ValidationException(
                 AdoptionError.InvalidId.ToString(), $"Некорретный PetId = {request.PetId}");
@@ -70,8 +79,33 @@ public class AdoptionApplicationService(PetHomeDbContext dbContext)
 
         dbContext.Applications.Add(application);
         
-        await dbContext.SaveChangesAsync(cancellationToken);
-        await transaction.CommitAsync(cancellationToken);
+        try
+        {
+             await dbContext.SaveChangesAsync(cancellationToken);
+             await transaction.CommitAsync(cancellationToken);
+        }
+        catch(Exception e)
+        {
+            if(saveAttempt < adoptionOptions.Value.RetryCount)
+            {
+                logger.LogWarning(
+                    e,
+                    "Не удалось сохранить заявку для пользователя {UserId}. Причина {Reason}. Попытка: {saveAttempt}",
+                    request.PetId,
+                    request.ApplicantId,
+                    e.Message,
+                    saveAttempt);
+                Interlocked.Increment(ref saveAttempt);
+                return await Add(request, cancellationToken);
+            }
+
+            logger.LogError(
+                e,
+                "Не удалось сохранить заявку для пользователя {UserId}. Причина {Reason}",
+                request.PetId,
+                request.ApplicantId,
+                e.Message);
+        }
         
         return application.Id;
     }
